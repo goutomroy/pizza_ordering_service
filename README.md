@@ -17,16 +17,47 @@ Imagine a pizza ordering services with the following functionality:
 	• List orders:
 		• It should be possible to retrieve all the orders at once.
 		• Allow filtering by status / customer.
+		
+#### Setup  & Run
+* This project was developed in Ubuntu 18.04.  
+* This project was developed using Python3.7, Django 2.2.6 and PostgreSQL.   
+* Install PostgreSQL database and Redis server.  
+* Create a virtual environment and do git clone this repository.  
 
-#### Tasks
-	1. Design the model / database structure, use PostgreSQL for a backend with Django.
-	2. Design and implement an API with the Django REST framework for the web service described above.
-	3. Write test(s) for at least one of the API endpoints that you implemented.
-	4. Write a brief README with instructions on how to get your code from Git clone to up and  running on macOS and/or Linux hosts
+* Create a new PostgreSQL database  in postgres server
 
-#### Please note!
-	• Use Docker, Python 3.6+ and the latest releases of Django, Django REST framework etc.
-	• You don't have to take care of authentication etc, we are just interested in structure and data modeling.
-	• You don't have to implement any frontend UI, just the API endpoints.
-	• Use viewsets where possible.
-	• Keep your endpoints as RESTful as possible.
+      'NAME': 'pizza_ordering_service',
+      'USER': 'postgres',
+      'PASSWORD': 'postgres',  
+
+* Install required packages
+
+      pip install -r requirements.txt
+    
+    
+* Migrate the database before the first run:
+
+      python manage.py migrate
+
+* Running the application
+
+      python manage.py runserver
+
+* Load initial data for projects:
+
+      python manage.py loaddata initial.json
+
+
+* Enter to admin with already created admin user:  
+
+      Username : andre  Password : 123456  
+
+* Run test
+
+      python manage.py test
+      
+#### Api Documentation  
+Check `API_DOC.md`    
+		
+
+

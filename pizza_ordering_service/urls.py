@@ -15,19 +15,9 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, re_path, include
-from rest_framework.routers import DefaultRouter
-from main.serializers import OrderPizzaSerializer
-from main.views import PizzaViewSet, OrderViewSet, OrderPizzaViewSet
-
-app_name = 'main'
-
-router = DefaultRouter()
-router.register(r'pizza', PizzaViewSet, base_name='pizza')
-router.register(r'order', OrderViewSet, base_name='order')
-router.register(r'order_pizza', OrderPizzaViewSet, base_name='order_pizza')
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('v1/', include(router.urls)),
+    path('api/', include('apps.main.urls')),
     re_path(r'^api-auth/', include('rest_framework.urls')),
 ]

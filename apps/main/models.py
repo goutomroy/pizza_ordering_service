@@ -1,7 +1,10 @@
 from django.contrib.auth.models import User
+from django.core.cache import cache
 from django.db import models
-from django.db.models.signals import post_save
+from django.db.models.signals import post_save, post_delete
 from django.dispatch import receiver
+from django.utils import timezone
+from pizza_ordering_service.utils import LAST_SYNCED_AT, STATUS_CHOICES, SIZE_CHOICES, populate_cache
 
 
 class UserProfile(models.Model):
@@ -31,15 +34,17 @@ class Pizza(models.Model):
         return self.flavor
 
 
-class Order(models.Model):
+@receiver(post_save, sender=Pizza)
+def after_pizza_save(sender, **kwargs):
+    populate_cache()
 
-    STATUS_CHOICES = (
-        (1, 'Submitted'),
-        (2, 'In Production'),
-        (3, 'Travelling'),
-        (4, 'Delivered'),
-        (0, 'Cancelled'),
-    )
+
+@receiver(post_delete, sender=Pizza)
+def after_pizza_delete(sender, **kwargs):
+    populate_cache()
+
+
+class Order(models.Model):
 
     user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
     items = models.ManyToManyField(Pizza, through='OrderPizza', through_fields=('order', 'pizza'))
@@ -57,12 +62,6 @@ class Order(models.Model):
 
 class OrderPizza(models.Model):
 
-    SIZE_CHOICES = (
-        (30, '30cm'),
-        (60, '60cm'),
-        (100, '100cm')
-    )
-
     order = models.ForeignKey(Order, on_delete=models.CASCADE)
     pizza = models.ForeignKey(Pizza, on_delete=models.CASCADE)
     size = models.PositiveSmallIntegerField(default=30, choices=SIZE_CHOICES)
@@ -75,4 +74,4 @@ class OrderPizza(models.Model):
         ]
 
     def __str__(self):
-        return '-'.join(str(self.order.id), self.pizza.flavor, self.size)
+        return "-".join([str(self.order), self.pizza.flavor, str(self.size)])
