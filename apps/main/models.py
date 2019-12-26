@@ -1,10 +1,8 @@
 from django.contrib.auth.models import User
-from django.core.cache import cache
 from django.db import models
 from django.db.models.signals import post_save, post_delete
 from django.dispatch import receiver
-from django.utils import timezone
-from pizza_ordering_service.utils import LAST_SYNCED_AT, STATUS_CHOICES, SIZE_CHOICES, populate_cache
+from pizza_ordering_service.utils import populate_cache, StatusTypes, SizeTypes
 
 
 class UserProfile(models.Model):
@@ -48,12 +46,12 @@ class Order(models.Model):
 
     user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
     items = models.ManyToManyField(Pizza, through='OrderPizza', through_fields=('order', 'pizza'))
-    status = models.PositiveSmallIntegerField(default=1, choices=STATUS_CHOICES)
+    status = models.PositiveSmallIntegerField(default=StatusTypes.SUBMITTED, choices=StatusTypes.choices())
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
 
     class Meta(object):
-        default_related_name = 'order'
+        default_related_name = 'orders'
         ordering = ('-created',)
 
     def __str__(self):
@@ -64,7 +62,7 @@ class OrderPizza(models.Model):
 
     order = models.ForeignKey(Order, on_delete=models.CASCADE)
     pizza = models.ForeignKey(Pizza, on_delete=models.CASCADE)
-    size = models.PositiveSmallIntegerField(default=30, choices=SIZE_CHOICES)
+    size = models.PositiveSmallIntegerField(default=SizeTypes.MEDIUM, choices=SizeTypes.choices())
     quantity = models.PositiveSmallIntegerField(default=1)
 
     class Meta:

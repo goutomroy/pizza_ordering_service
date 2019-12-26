@@ -8,7 +8,7 @@ from rest_framework.viewsets import ModelViewSet
 from apps.main.filters import OrderFilter, OrderPizzaFilter
 from apps.main.models import Pizza, Order, OrderPizza
 from apps.main.serializers import PizzaSerializer, OrderSerializer, OrderPizzaSerializer
-from pizza_ordering_service.utils import LAST_SYNCED_AT, STATUS_CHOICES, SIZE_CHOICES
+from pizza_ordering_service.utils import LAST_SYNCED_AT, StatusTypes, SizeTypes
 
 
 class UtilsViewSet(viewsets.GenericViewSet):
@@ -23,8 +23,8 @@ class UtilsViewSet(viewsets.GenericViewSet):
 
             response = dict()
             response['last_synced_at'] = timezone.now().timestamp()
-            response['order_status_choices'] = STATUS_CHOICES
-            response['pizza_size_choices'] = SIZE_CHOICES
+            response['order_status_choices'] = StatusTypes.choices()
+            response['pizza_size_choices'] = SizeTypes.choices()
             response['pizza_choices'] = cache.get('pizza')
 
         except Exception as e:

@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from apps.main.models import Pizza, OrderPizza, Order
-from pizza_ordering_service.utils import STATUS_CHOICES
+from pizza_ordering_service.utils import StatusTypes
 
 
 class PizzaSerializer(serializers.ModelSerializer):
@@ -41,7 +41,7 @@ class OrderSerializer(serializers.ModelSerializer):
     def update(self, instance, validated_data):
 
         if 'status' in self.initial_data:
-            if instance.status in [4, 5]:
+            if instance.status in [StatusTypes.DELIVERED, StatusTypes.CANCELED]:
                 raise serializers.ValidationError("Status can't be changed now, because its delivered or cancelled.")
             elif self.initial_data['status'] < instance.status:
                 raise serializers.ValidationError("Status can't be downgraded.")
@@ -52,8 +52,8 @@ class OrderSerializer(serializers.ModelSerializer):
             instance.save()
             return instance
 
-        elif instance.status > 1:
-            msg = dict(STATUS_CHOICES)[instance.status]
+        elif instance.status > StatusTypes.SUBMITTED:
+            msg = dict(StatusTypes.choices())[instance.status]
             raise serializers.ValidationError(f"Now order can't be updated, because its {msg}")
 
         elif 'order_pizza' in self.initial_data:
