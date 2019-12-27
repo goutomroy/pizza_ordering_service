@@ -28,21 +28,6 @@ class SizeTypes(IntEnum):
         return [(key.value, key.name) for key in cls]
 
 
-# STATUS_CHOICES = (
-#     (1, 'Submitted'),
-#     (2, 'In Production'),
-#     (3, 'Travelling'),
-#     (4, 'Delivered'),
-#     (5, 'Cancelled'),
-# )
-#
-# SIZE_CHOICES = (
-#     (30, '30cm'),
-#     (60, '60cm'),
-#     (100, '100cm')
-# )
-
-
 def populate_cache():
     from apps.main.models import Pizza
     from apps.main.serializers import PizzaSerializer

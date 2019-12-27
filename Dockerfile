@@ -11,15 +11,14 @@ ENV PYTHONUNBUFFERED 1
 RUN mkdir /code
 WORKDIR /code
 
-# copy project
-COPY . /code/
-
 # install psycopg2 dependencies
 RUN apk update && apk add postgresql-dev gcc python3-dev musl-dev
 
+# copy project
+COPY pizza_ordering_service /code/
+
 # install dependencies
-RUN pip install --upgrade pip
-RUN pip install -r requirements.txt
+RUN pip3 install -r requirements.txt
 
 
 
