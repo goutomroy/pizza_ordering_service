@@ -22,7 +22,7 @@ class OrderAdmin(admin.ModelAdmin):
 
     list_display = ['id', 'user', 'status', 'created']
     search_fields = ['id', 'user__email', 'user__username', 'status']
-    list_filter = ['status', 'created']
+    list_filter = ['user', 'status', 'created']
     readonly_fields = ['id', 'created', 'updated']
     list_display_links = ['id', 'user']
     inlines = [PizzaItemInline]

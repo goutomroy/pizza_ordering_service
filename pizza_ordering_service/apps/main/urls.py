@@ -6,10 +6,9 @@ app_name = 'main'
 
 router = DefaultRouter()
 router.register(r'utils', UtilsViewSet, basename='utils')
-router.register(r'pizzas', PizzaViewSet, basename='pizzas')
-router.register(r'orders', OrderViewSet, basename='orders')
-router.register(r'order_items', OrderItemViewSet, basename='order_items')
-
+router.register(r'pizzas', PizzaViewSet, basename='pizza')
+router.register(r'orders', OrderViewSet, basename='order')
+router.register(r'order_items', OrderItemViewSet, basename='order_item')
 
 urlpatterns = [
     path('v1/', include(router.urls)),

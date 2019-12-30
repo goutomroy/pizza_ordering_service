@@ -45,7 +45,7 @@ def after_pizza_delete(sender, **kwargs):
 
 class Order(models.Model):
 
-    user = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, blank=False)
     status = models.PositiveSmallIntegerField(default=StatusTypes.SUBMITTED, choices=StatusTypes.choices())
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
