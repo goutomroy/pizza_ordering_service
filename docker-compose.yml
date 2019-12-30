@@ -1,0 +1,42 @@
+version: '3.7'
+
+services:
+
+  redis:
+    container_name: 'pizza_ordering_service_redis'
+    image: 'redis:latest'
+    restart: on-failure
+    ports:
+      - '127.0.0.1:6379:6379'
+    volumes:
+      - 'redisdata:/data'
+
+  postgres:
+    container_name: 'pizza_ordering_service_postgresql'
+    image: postgres:12.1-alpine
+    restart: on-failure
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=pizza_ordering_service
+
+  web:
+    container_name: 'pizza_ordering_service_web'
+    build: .
+    command: sh -c 'python manage.py migrate && python manage.py runserver 0.0.0.0:8000'
+    restart: on-failure
+    volumes:
+      - ./pizza_ordering_service/:/code/
+    ports:
+      - 8000:8000
+    env_file:
+      - pizza_ordering_service/.env.dev
+    depends_on:
+      - postgres
+      - redis
+
+volumes:
+  postgres_data:
+  redisdata:
