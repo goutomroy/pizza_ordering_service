@@ -1,16 +1,15 @@
-from django.contrib.auth.models import User
 from django.core.cache import cache
 from django.utils import timezone
 from rest_framework import viewsets, status, exceptions
 from rest_framework.decorators import action
-from rest_framework.exceptions import PermissionDenied
 from rest_framework.generics import get_object_or_404
-from rest_framework.permissions import IsAuthenticated, IsAdminUser, SAFE_METHODS
+from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from rest_framework.response import Response
 from apps.main.filters import OrderFilter, OrderItemFilter
 from apps.main.models import Pizza, Order, OrderItem
+from apps.main.paginations import StandardResultsSetPagination
 from apps.main.permissions import IsOwner
-from apps.main.serializers import PizzaSerializer, OrderSerializer, OrderItemSerializer
+from apps.main.serializers import PizzaSerializer, OrderSerializer, OrderItemSerializerRead, OrderItemSerializerWrite
 from pizza_ordering_service.utils import LAST_SYNCED_AT, StatusTypes, SizeTypes
 
 
@@ -65,9 +64,10 @@ class OrderViewSet(viewsets.ModelViewSet):
     # authentication_classes = ()
     # permission_classes = (IsAuthenticated, )
 
-    # queryset = Order.objects.all()
+    queryset = Order.objects.all()
     serializer_class = OrderSerializer
     filterset_class = OrderFilter
+    pagination_class = StandardResultsSetPagination
     permission_classes = (IsAuthenticated, IsOwner)
     http_method_names = ['get', 'post', 'patch']
 
@@ -75,22 +75,17 @@ class OrderViewSet(viewsets.ModelViewSet):
         if self.action in ['list']:
             return Order.objects.prefetch_related('order_items').filter(user=self.request.user)
         else:
-            return Order.objects.all()
+            return self.queryset
 
-    def create(self, request, *args, **kwargs):
-        order = Order.objects.create(user=request.user)
-        serializer = OrderSerializer(order)
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
-
-    def partial_update(self, request, *args, **kwargs):
-        order = get_object_or_404(self.get_queryset(), pk=self.kwargs["pk"])
-        if 'status' in request.data:
-            if request.data['status'] == StatusTypes.CANCELED and order.status >= StatusTypes.IN_PRODUCTION:
-                raise exceptions.PermissionDenied("Status can't be changed now, because its in process of delivery.")
-
-            elif request.data['status'] < order.status:
-                raise exceptions.PermissionDenied("Status can't be downgraded.")
-        return super().partial_update(request, *args, **kwargs)
+    # def partial_update(self, request, *args, **kwargs):
+    #     if 'status' in request.data:
+    #         order = get_object_or_404(self.get_queryset(), pk=self.kwargs["pk"])
+    #         if request.data['status'] == StatusTypes.CANCELED and order.status >= StatusTypes.IN_PRODUCTION:
+    #             raise exceptions.PermissionDenied("Status can't be changed now, because its in process of delivery.")
+    #
+    #         elif request.data['status'] < order.status:
+    #             raise exceptions.PermissionDenied("Status can't be downgraded.")
+    #     return super().partial_update(request, *args, **kwargs)
 
     # def get_queryset(self):
     #     if self.action in ['list']:
@@ -291,6 +286,11 @@ class OrderItemViewSet(viewsets.ModelViewSet):
     queryset = OrderItem.objects.all()
     authentication_classes = ()
     permission_classes = ()
-    serializer_class = OrderItemSerializer
     filterset_class = OrderItemFilter
+
+    def get_serializer_class(self):
+        if self.action in ['create', 'update']:
+            return OrderItemSerializerWrite
+        else:
+            return OrderItemSerializerRead
 

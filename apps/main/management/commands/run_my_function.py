@@ -27,20 +27,21 @@ class Command(BaseCommand):
         serializer = CommentSerializer(data={'email': 'g@x.com', 'created': datetime.now()})
 
         data = {'user':1, 'status': 3}
-        serializer = OrderSerializerTest(data=data)
+        serializer = OrderSerializerTest()
+        print(repr(serializer))
 
-        if serializer.is_valid():
-            print(f"validated data : {serializer.validated_data}")
-            # .save() will create a new instance.
-            # serializer = CommentSerializer(data=naive_data)
-
-            # .save() will update the existing `comment` instance.
-            # serializer = CommentSerializer(comment, data=naive_data)
-
-            # comment = serializer.save()
-            # print(f"naive : {naive_data}, validated_data : {serializer.validated_data}")
-        else:
-            print(f"serializer errors : {serializer.errors}")
+        # if serializer.is_valid():
+        #     print(f"validated data : {serializer.validated_data}")
+        #     # .save() will create a new instance.
+        #     # serializer = CommentSerializer(data=naive_data)
+        #
+        #     # .save() will update the existing `comment` instance.
+        #     # serializer = CommentSerializer(comment, data=naive_data)
+        #
+        #     # comment = serializer.save()
+        #     # print(f"naive : {naive_data}, validated_data : {serializer.validated_data}")
+        # else:
+        #     print(f"serializer errors : {serializer.errors}")
 
 
 class CommentSerializer(serializers.Serializer):

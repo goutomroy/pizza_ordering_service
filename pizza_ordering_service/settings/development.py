@@ -1,13 +1,14 @@
 from .base import *
 
 DEBUG = True
-
 # ALLOWED_HOSTS = ['127.0.0.1']
 ALLOWED_HOSTS = os.environ.get("DJANGO_ALLOWED_HOSTS").split(" ")
 
-INSTALLED_APPS += ['silk']
+MIDDLEWARE = ['pizza_ordering_service.middlewares.QueryInspectorMiddleware'] + MIDDLEWARE
 
-MIDDLEWARE += ['silk.middleware.SilkyMiddleware']
+# INSTALLED_APPS += ['silk']
+
+# MIDDLEWARE += ['silk.middleware.SilkyMiddleware']
 
 # DB_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 

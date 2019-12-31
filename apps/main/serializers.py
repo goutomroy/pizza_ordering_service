@@ -1,14 +1,14 @@
-from django.contrib.auth.models import User
-from rest_framework import serializers
-from rest_framework import exceptions
+from rest_framework import serializers, exceptions
 from apps.main.models import Pizza, OrderItem, Order
 from pizza_ordering_service.utils import StatusTypes
 
 
 class PizzaSerializer(serializers.ModelSerializer):
+
     class Meta:
         model = Pizza
         fields = ('id', 'flavor', 'description')
+        # read_only_fields = ('flavor', 'description')
 
 
 class OrderPizzaSerializerNested(serializers.ModelSerializer):
@@ -18,18 +18,28 @@ class OrderPizzaSerializerNested(serializers.ModelSerializer):
         fields = ('id', 'pizza', 'size', 'quantity')
 
 
-class OrderItemSerializer(serializers.ModelSerializer):
+class OrderItemSerializerRead(serializers.ModelSerializer):
+
+    pizza = PizzaSerializer()
 
     class Meta:
         model = OrderItem
-        fields = ('id', 'pizza', 'order', 'size', 'quantity')
+        fields = ('id', 'order', 'pizza', 'size', 'quantity')
+
+
+class OrderItemSerializerWrite(serializers.ModelSerializer):
+
+    pizza = PizzaSerializer()
+
+    class Meta:
+        model = OrderItem
+        fields = ('id', 'order', 'pizza', 'size', 'quantity')
 
 
 class OrderSerializerTest(serializers.ModelSerializer):
-    order_items = OrderItemSerializer(many=True, read_only=True)
+    order_items = OrderItemSerializerRead(many=True, read_only=True)
 
     class Meta:
-
         model = Order
         fields = ('id', 'user', 'status', 'created', 'order_items')
         read_only_fields = ('user', 'status',)
@@ -48,7 +58,7 @@ class OrderSerializerTest(serializers.ModelSerializer):
 
 
 class OrderSerializer(serializers.ModelSerializer):
-    order_items = OrderItemSerializer(many=True, read_only=True)
+    order_items = OrderItemSerializerRead(many=True, read_only=True)
 
     class Meta:
         """
@@ -78,6 +88,19 @@ class OrderSerializer(serializers.ModelSerializer):
         fields = ('id', 'user', 'status', 'created', 'order_items')
         read_only_fields = ('user', )
 
+    def create(self, validated_data):
+        return Order.objects.create(user=self.context['request'].user)
+
+    def update(self, instance, validated_data):
+        if 'status' in validated_data:
+            if validated_data['status'] == StatusTypes.CANCELED and instance.status >= StatusTypes.IN_PRODUCTION:
+                raise exceptions.PermissionDenied("Status can't be changed now, because its in process of delivery.")
+
+            elif validated_data['status'] < instance.status:
+                raise exceptions.PermissionDenied("Status can't be downgraded.")
+
+        return super().update(instance, validated_data)
+
     # def get_extra_kwargs(self):
     #     action = self.context['view'].action
     #
@@ -94,17 +117,6 @@ class OrderSerializer(serializers.ModelSerializer):
     #     # print(f"validated_data : {validated_data}")
     #     validated_data['user'] = self.context['request'].user
     #     return Order.objects.create(**validated_data)
-
-    # def update(self, instance, validated_data):
-    #     # print(f"validated_data : {validated_data}")
-    #     if 'status' in validated_data:
-    #         if validated_data['status'] == StatusTypes.CANCELED and instance.status >= StatusTypes.IN_PRODUCTION:
-    #             raise exceptions.PermissionDenied("Status can't be changed now, because its in process of delivery.")
-    #
-    #         elif validated_data['status'] < instance.status:
-    #             raise exceptions.PermissionDenied("Status can't be downgraded.")
-    #
-    #     return super().update(instance, validated_data)
 
 
 # class OrderCreateSerializer(serializers.ModelSerializer):

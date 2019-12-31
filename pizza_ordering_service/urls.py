@@ -20,8 +20,7 @@ from drf_yasg import openapi
 from drf_yasg.views import get_schema_view
 from rest_framework import permissions
 
-schema_view = get_schema_view(
-   openapi.Info(
+schema_view = get_schema_view(openapi.Info(
       title="Polls API",
       default_version='v1',
       description="Api description",
@@ -29,8 +28,8 @@ schema_view = get_schema_view(
       contact=openapi.Contact(email="goutom.sust.cse@gmail.com"),
       license=openapi.License(name="BSD License"),
    ),
-   public=True,
-   permission_classes=(permissions.AllowAny,),
+   public=False,
+   permission_classes=(permissions.IsAdminUser,),
 )
 
 
@@ -43,7 +42,7 @@ urlpatterns = [
     re_path(r'^redoc/$', schema_view.with_ui('redoc', cache_timeout=0), name='schema-redoc'),
 ]
 
-if settings.DEBUG:
-    urlpatterns += [re_path(r'^silk/', include('silk.urls', namespace='silk'))]
+# if settings.DEBUG:
+#     urlpatterns += [re_path(r'^silk/', include('silk.urls', namespace='silk'))]
     # import debug_toolbar
     # urlpatterns = [path('__debug__/', include(debug_toolbar.urls)), ] + urlpatterns

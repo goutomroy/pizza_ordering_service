@@ -2,6 +2,7 @@ from django.contrib.auth.models import User
 from django.db import models
 from django.db.models.signals import post_save, post_delete
 from django.dispatch import receiver
+from rest_framework.authtoken.models import Token
 from pizza_ordering_service.utils import populate_cache, StatusTypes, SizeTypes
 
 
@@ -23,6 +24,7 @@ class UserProfile(models.Model):
 def create_profile(sender, **kwargs):
     if kwargs.get('created', False):
         UserProfile.objects.get_or_create(user=kwargs.get('instance'))
+        Token.objects.get_or_create(user=kwargs.get('instance'))
 
 
 class Pizza(models.Model):
@@ -45,7 +47,7 @@ def after_pizza_delete(sender, **kwargs):
 
 class Order(models.Model):
 
-    user = models.ForeignKey(User, on_delete=models.CASCADE, blank=False)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
     status = models.PositiveSmallIntegerField(default=StatusTypes.SUBMITTED, choices=StatusTypes.choices())
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
@@ -62,8 +64,8 @@ class OrderItem(models.Model):
 
     order = models.ForeignKey(Order, on_delete=models.CASCADE)
     pizza = models.ForeignKey(Pizza, on_delete=models.CASCADE)
-    size = models.PositiveSmallIntegerField(default=SizeTypes.MEDIUM, choices=SizeTypes.choices())
-    quantity = models.PositiveSmallIntegerField(default=1)
+    size = models.PositiveSmallIntegerField(choices=SizeTypes.choices())
+    quantity = models.PositiveSmallIntegerField()
 
     class Meta:
         default_related_name = 'order_items'
