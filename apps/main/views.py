@@ -9,7 +9,8 @@ from apps.main.filters import OrderFilter, OrderItemFilter
 from apps.main.models import Pizza, Order, OrderItem
 from apps.main.paginations import StandardResultsSetPagination
 from apps.main.permissions import IsOwner
-from apps.main.serializers import PizzaSerializer, OrderSerializer, OrderItemSerializerRead, OrderItemSerializerWrite
+from apps.main.serializers import PizzaSerializer, OrderSerializer, OrderItemSerializerRead, OrderItemSerializerWrite, \
+    OrderItemSerializer
 from pizza_ordering_service.utils import LAST_SYNCED_AT, StatusTypes, SizeTypes
 
 
@@ -68,14 +69,15 @@ class OrderViewSet(viewsets.ModelViewSet):
     serializer_class = OrderSerializer
     filterset_class = OrderFilter
     pagination_class = StandardResultsSetPagination
-    permission_classes = (IsAuthenticated, IsOwner)
+    # permission_classes = (IsAuthenticated, IsOwner)
     http_method_names = ['get', 'post', 'patch']
 
     def get_queryset(self):
-        if self.action in ['list']:
-            return Order.objects.prefetch_related('order_items').filter(user=self.request.user)
-        else:
-            return self.queryset
+        return Order.objects.prefetch_related('order_items').filter(user=self.request.user)
+        # if self.action in ['list']:
+        #     return Order.objects.prefetch_related('order_items').filter(user=self.request.user)
+        # else:
+        #     return self.queryset
 
     # def partial_update(self, request, *args, **kwargs):
     #     if 'status' in request.data:
@@ -284,13 +286,20 @@ class OrderViewSet(viewsets.ModelViewSet):
 
 class OrderItemViewSet(viewsets.ModelViewSet):
     queryset = OrderItem.objects.all()
-    authentication_classes = ()
-    permission_classes = ()
+    # authentication_classes = ()
+    # permission_classes = ()
     filterset_class = OrderItemFilter
+    serializer_class = OrderItemSerializer
 
-    def get_serializer_class(self):
-        if self.action in ['create', 'update']:
-            return OrderItemSerializerWrite
+    # def get_serializer_class(self):
+    #     if self.action in ['create', 'update']:
+    #         return OrderItemSerializerWrite
+    #     else:
+    #         return OrderItemSerializerRead
+
+    def get_queryset(self):
+        if self.action in ['list']:
+            return OrderItem.objects.filter(order__user=self.request.user)
         else:
-            return OrderItemSerializerRead
+            return self.queryset
 

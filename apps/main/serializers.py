@@ -18,6 +18,13 @@ class OrderPizzaSerializerNested(serializers.ModelSerializer):
         fields = ('id', 'pizza', 'size', 'quantity')
 
 
+class OrderItemSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = OrderItem
+        fields = ('id', 'order', 'pizza', 'size', 'quantity')
+
+
 class OrderItemSerializerRead(serializers.ModelSerializer):
 
     pizza = PizzaSerializer()
@@ -28,8 +35,6 @@ class OrderItemSerializerRead(serializers.ModelSerializer):
 
 
 class OrderItemSerializerWrite(serializers.ModelSerializer):
-
-    pizza = PizzaSerializer()
 
     class Meta:
         model = OrderItem
@@ -43,18 +48,6 @@ class OrderSerializerTest(serializers.ModelSerializer):
         model = Order
         fields = ('id', 'user', 'status', 'created', 'order_items')
         read_only_fields = ('user', 'status',)
-
-
-# class CurrentUserDefault:
-#
-#     requires_context = True
-#
-#     def __call__(self, serializer_field):
-#         user = serializer_field.context['request'].user
-#         return user
-#
-#     def __repr__(self):
-#         return '%s()' % self.__class__.__name__
 
 
 class OrderSerializer(serializers.ModelSerializer):
