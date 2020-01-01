@@ -4,9 +4,8 @@ from rest_framework import serializers
 from rest_framework.renderers import JSONRenderer
 import io
 from rest_framework.parsers import JSONParser
-
 from apps.main.models import Order
-from apps.main.serializers import OrderSerializer, OrderSerializerTest
+from apps.main.serializers import OrderSerializer, OrderItemSerializer, ProfileSerializer
 
 
 class Command(BaseCommand):
@@ -28,7 +27,9 @@ class Command(BaseCommand):
 
         data = {'user':1, 'status': 3}
         serializer = OrderSerializerTest()
-        print(repr(serializer))
+        serializer = OrderItemSerializer()
+        # serializer = ProfileSerializer()
+        print(serializer)
 
         # if serializer.is_valid():
         #     print(f"validated data : {serializer.validated_data}")
