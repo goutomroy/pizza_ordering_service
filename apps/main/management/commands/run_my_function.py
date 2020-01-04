@@ -4,8 +4,7 @@ from rest_framework import serializers
 from rest_framework.renderers import JSONRenderer
 import io
 from rest_framework.parsers import JSONParser
-from apps.main.models import Order
-from apps.main.serializers import OrderSerializer, OrderItemSerializer, ProfileSerializer
+from apps.main.serializers import OrderItemSerializerNested
 
 
 class Command(BaseCommand):
@@ -26,8 +25,8 @@ class Command(BaseCommand):
         serializer = CommentSerializer(data={'email': 'g@x.com', 'created': datetime.now()})
 
         data = {'user':1, 'status': 3}
-        serializer = OrderSerializerTest()
-        serializer = OrderItemSerializer()
+        serializer = OrderItemSerializerNested()
+        # serializer = OrderItemSerializer()
         # serializer = ProfileSerializer()
         print(serializer)
 

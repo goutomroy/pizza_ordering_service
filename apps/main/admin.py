@@ -40,12 +40,17 @@ class PizzaAdmin(admin.ModelAdmin):
 
 class OrderItemAdmin(admin.ModelAdmin):
 
-    list_display = ['id', 'order', 'pizza', 'size', 'quantity']
+    list_display = ['id', 'order', 'get_user', 'pizza', 'size', 'quantity']
     search_fields = ['id', 'order', 'pizza', 'size']
     list_filter = ['pizza', 'size']
     readonly_fields = ['id']
     list_display_links = ['id', 'order', 'pizza', 'size']
     ordering = ['-id']
+
+    def get_user(self, obj):
+        return obj.order.user
+
+    get_user.short_description = 'User'
 
 
 admin.site.register(UserProfile, UserProfileAdmin)
