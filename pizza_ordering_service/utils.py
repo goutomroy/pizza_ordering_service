@@ -1,5 +1,4 @@
 from enum import IntEnum
-
 from django.core.cache import cache
 from django.utils import timezone
 

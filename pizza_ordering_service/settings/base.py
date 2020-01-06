@@ -36,6 +36,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework.authtoken',
     'django_filters',
+    'swagger_render',
     'drf_yasg',
     'apps.main'
 ]
@@ -95,6 +96,7 @@ REST_FRAMEWORK = {
     }
 }
 
+SWAGGER_YAML_FILENAME = '/docs/index.yml'
 
 # Password validation
 # https://docs.djangoproject.com/en/2.2/ref/settings/#auth-password-validators

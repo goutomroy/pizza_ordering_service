@@ -44,6 +44,7 @@ class OrderViewSet(viewsets.ModelViewSet):
     serializer_class = OrderSerializer
     filterset_class = OrderFilter
     pagination_class = StandardResultsSetPagination
+    http_method_names = ('get', 'post', 'put')
 
     def get_queryset(self):
         return Order.objects.prefetch_related('order_items').filter(user=self.request.user)

@@ -1,0 +1,568 @@
+swagger: '2.0'
+info:
+  title: Pizza Ordering Service
+  description: Api description
+  termsOfService: 'https://www.google.com/policies/terms/'
+  contact:
+    email: goutom.sust.cse@gmail.com
+  license:
+    name: BSD License
+  version: v1
+host: '127.0.0.1:8000'
+schemes:
+  - http
+basePath: /api/v1
+consumes:
+  - application/json
+produces:
+  - application/json
+securityDefinitions:
+  Basic:
+    type: basic
+  APIKeyHeader:
+    type: apiKey
+    in: header
+    name: Authorization
+security:
+  - Basic: []
+  - APIKeyHeader: []
+paths:
+  /order_items/:
+    get:
+      operationId: order_items_list
+      description: 'Get order items of authenticated user.'
+      parameters:
+        - name: order
+          in: query
+          description: ''
+          required: false
+          type: string
+        - name: pizza
+          in: query
+          description: ''
+          required: false
+          type: string
+        - name: size
+          in: query
+          description: ''
+          required: false
+          type: string
+        - name: quantity
+          in: query
+          description: ''
+          required: false
+          type: number
+        - name: ordering
+          in: query
+          description: Which field to use when ordering the results.
+          required: false
+          type: string
+        - name: page
+          in: query
+          description: A page number within the paginated result set.
+          required: false
+          type: integer
+        - name: page_size
+          in: query
+          description: Number of results to return per page. At most 100.
+          required: false
+          type: integer
+      responses:
+        '200':
+          description: ''
+          schema:
+            required:
+              - count
+              - results
+            type: object
+            properties:
+              count:
+                type: integer
+              next:
+                type: string
+                format: uri
+                x-nullable: true
+              previous:
+                type: string
+                format: uri
+                x-nullable: true
+              results:
+                type: array
+                items:
+                  $ref: '#/definitions/OrderItem'
+      tags:
+        - order_items
+    post:
+      operationId: order_items_create
+      description: 'Create single/multiple order item at once. For multiple item send json array of items. This is another api to create order item if order is already created.'
+      parameters:
+        - name: data
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/OrderItem'
+      responses:
+        '201':
+          description: ''
+          schema:
+            $ref: '#/definitions/OrderItem'
+      tags:
+        - order_items
+    parameters: []
+  '/order_items/{id}/':
+    get:
+      operationId: order_items_read
+      description: 'Get an order. If specified id is not belongs to authenticated user then 204 is returned.'
+      parameters: []
+      responses:
+        '200':
+          description: ''
+          schema:
+            $ref: '#/definitions/OrderItem'
+      tags:
+        - order_items
+    put:
+      operationId: order_items_update
+      description: 'Update an order. If specified id is not belongs to authenticated user then 204 is returned'
+      parameters:
+        - name: data
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/OrderItem'
+      responses:
+        '200':
+          description: ''
+          schema:
+            $ref: '#/definitions/OrderItem'
+      tags:
+        - order_items
+    patch:
+      operationId: order_items_partial_update
+      description: ''
+      parameters:
+        - name: data
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/OrderItem'
+      responses:
+        '200':
+          description: ''
+          schema:
+            $ref: '#/definitions/OrderItem'
+      tags:
+        - order_items
+    delete:
+      operationId: order_items_delete
+      description: ''
+      parameters: []
+      responses:
+        '204':
+          description: ''
+      tags:
+        - order_items
+    parameters:
+      - name: id
+        in: path
+        required: true
+        type: string
+  /orders/:
+    get:
+      operationId: orders_list
+      description: 'Get authenticated user order list.'
+      parameters:
+        - name: status
+          in: query
+          description: ''
+          required: false
+          type: string
+        - name: ordering
+          in: query
+          description: Which field to use when ordering the results. Default ordering is by latest created date.
+          required: false
+          type: string
+        - name: page
+          in: query
+          description: A page number within the paginated result set.
+          required: false
+          type: integer
+        - name: page_size
+          in: query
+          description: Number of results to return per page. Atmost 100.
+          required: false
+          type: integer
+      responses:
+        '200':
+          description: ''
+          schema:
+            required:
+              - count
+              - results
+            type: object
+            properties:
+              count:
+                type: integer
+              next:
+                type: string
+                format: uri
+                x-nullable: true
+              previous:
+                type: string
+                format: uri
+                x-nullable: true
+              results:
+                type: array
+                items:
+                  $ref: '#/definitions/Order'
+      tags:
+        - orders
+    post:
+      operationId: orders_create
+      description: ''
+      parameters:
+        - name: data
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/Order-Create'
+      responses:
+        '201':
+          description: ''
+          schema:
+            $ref: '#/definitions/Order'
+      tags:
+        - orders
+    parameters: []
+  '/orders/{id}/':
+    get:
+      operationId: orders_read
+      description: 'Get an order which belongs to authenticated user. If specified order id is not belongs to authenticated user then 204 is returned.'
+      parameters: []
+      responses:
+        '200':
+          description: ''
+          schema:
+            $ref: '#/definitions/Order'
+      tags:
+        - orders
+    put:
+      operationId: orders_update
+      description: 'Update a single order which belongs to authenticated user. If specified order id is not belongs to authenticated user then 204 is returned. You can change status and single/multiple order items at once. Cancel order putting status value 5. There is no order delete api.'
+      parameters:
+        - name: data
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/Order-Update'
+      responses:
+        '200':
+          description: ''
+          schema:
+            $ref: '#/definitions/Order'
+      tags:
+        - orders
+    parameters:
+      - name: id
+        in: path
+        required: true
+        type: string
+  /pizzas/:
+    get:
+      operationId: pizzas_list
+      description: ''
+      parameters:
+        - name: search
+          in: query
+          description: A search term.
+          required: false
+          type: string
+        - name: ordering
+          in: query
+          description: Which field to use when ordering the results.
+          required: false
+          type: string
+      responses:
+        '200':
+          description: ''
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Pizza'
+      tags:
+        - pizzas
+    post:
+      operationId: pizzas_create
+      description: ''
+      parameters:
+        - name: data
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/Pizza'
+      responses:
+        '201':
+          description: ''
+          schema:
+            $ref: '#/definitions/Pizza'
+      tags:
+        - pizzas
+    parameters: []
+  '/pizzas/{id}/':
+    get:
+      operationId: pizzas_read
+      description: ''
+      parameters: []
+      responses:
+        '200':
+          description: ''
+          schema:
+            $ref: '#/definitions/Pizza'
+      tags:
+        - pizzas
+    put:
+      operationId: pizzas_update
+      description: ''
+      parameters:
+        - name: data
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/Pizza'
+      responses:
+        '200':
+          description: ''
+          schema:
+            $ref: '#/definitions/Pizza'
+      tags:
+        - pizzas
+    patch:
+      operationId: pizzas_partial_update
+      description: ''
+      parameters:
+        - name: data
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/Pizza'
+      responses:
+        '200':
+          description: ''
+          schema:
+            $ref: '#/definitions/Pizza'
+      tags:
+        - pizzas
+    delete:
+      operationId: pizzas_delete
+      description: ''
+      parameters: []
+      responses:
+        '204':
+          description: ''
+      tags:
+        - pizzas
+    parameters:
+      - name: id
+        in: path
+        description: A unique integer value identifying this pizza.
+        required: true
+        type: integer
+  /utils/initials/:
+    get:
+      operationId: utils_initials
+      description: 'Get initial data which you need in future requests.'
+      parameters:
+        - name: last_synced_at
+          in: query
+          description: Time in seconds. Second time append this parameter, value, you will get in first request.
+          required: false
+          type: string
+      responses:
+        '200':
+          description: ''
+      tags:
+        - utils
+    parameters: []
+definitions:
+  OrderItem:
+    required:
+      - order
+      - pizza
+      - size
+      - quantity
+    type: object
+    properties:
+      id:
+        title: ID
+        type: integer
+        readOnly: true
+      order:
+        title: Order
+        type: integer
+      pizza:
+        title: Pizza
+        type: integer
+      size:
+        title: Size
+        type: integer
+        enum:
+          - 1
+          - 2
+          - 3
+      quantity:
+        title: Quantity
+        type: integer
+        maximum: 1000
+        minimum: 1
+  OrderItemSerializerNested-Create:
+    required:
+      - pizza
+      - size
+      - quantity
+    type: object
+    properties:
+      pizza:
+        title: Pizza
+        type: integer
+      size:
+        title: Size
+        type: integer
+        enum:
+          - 1
+          - 2
+          - 3
+      quantity:
+        title: Quantity
+        type: integer
+        maximum: 1000
+        minimum: 1
+  OrderItemSerializerNested-Update:
+    required:
+      - id
+      - order
+      - pizza
+      - size
+    type: object
+    properties:
+      id:
+        title: ID
+        type: integer
+      order:
+        title: Order
+        type: integer
+      pizza:
+        title: Pizza
+        type: integer
+      size:
+        title: Size
+        type: integer
+        enum:
+          - 1
+          - 2
+          - 3
+      quantity:
+        title: Quantity
+        type: integer
+        maximum: 1000
+        minimum: 1
+  OrderItemSerializerNested:
+    required:
+      - order
+      - pizza
+      - size
+      - quantity
+    type: object
+    properties:
+      id:
+        title: ID
+        type: integer
+        readOnly: true
+      order:
+        title: Order
+        type: integer
+      pizza:
+        title: Pizza
+        type: integer
+      size:
+        title: Size
+        type: integer
+        enum:
+          - 1
+          - 2
+          - 3
+      quantity:
+        title: Quantity
+        type: integer
+        maximum: 1000
+        minimum: 1
+  Order:
+    type: object
+    properties:
+      id:
+        title: ID
+        type: integer
+        readOnly: true
+      user:
+        title: User
+        type: integer
+        readOnly: true
+      status:
+        title: Status
+        type: integer
+        enum:
+          - 1
+          - 2
+          - 3
+          - 4
+          - 5
+      created:
+        title: Created
+        type: string
+        format: date-time
+        readOnly: true
+      order_items:
+        type: array
+        items:
+          $ref: '#/definitions/OrderItemSerializerNested'
+  Order-Create:
+    type: object
+    properties:
+      order_items:
+        type: array
+        items:
+          $ref: '#/definitions/OrderItemSerializerNested-Create'
+  Order-Update:
+    type: object
+    properties:
+
+      status:
+        title: Status
+        type: integer
+        enum:
+          - 1
+          - 2
+          - 3
+          - 4
+          - 5
+      order_items:
+        type: array
+        items:
+          $ref: '#/definitions/OrderItemSerializerNested-Update'
+  Pizza:
+    required:
+      - flavor
+    type: object
+    properties:
+      id:
+        title: ID
+        type: integer
+        readOnly: true
+      flavor:
+        title: Flavor
+        type: string
+        maxLength: 20
+        minLength: 1
+      description:
+        title: Description
+        type: string
+        maxLength: 500
