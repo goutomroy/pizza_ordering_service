@@ -9,7 +9,6 @@ django-filter==2.2.0
 django-redis==4.11.0
 django-swagger-render==0.1.0
 djangorestframework==3.11.0
-drf-yasg==1.17.0
 gprof2dot==2019.11.30
 idna==2.8
 inflection==0.3.1

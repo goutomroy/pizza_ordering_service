@@ -16,7 +16,6 @@ class OrderItemSerializer(serializers.ModelSerializer):
     class Meta:
         model = OrderItem
         fields = ('id', 'order', 'pizza', 'size', 'quantity')
-        # read_only_fields = ('order',)
         validators = [UniqueTogetherValidator(
             queryset=OrderItem.objects.all(),
             fields=['order', 'pizza', 'size'],
@@ -71,7 +70,7 @@ class OrderSerializer(serializers.ModelSerializer):
         order = Order.objects.create(user=self.context['request'].user)
         items = []
         for oi in order_items:
-            # checking no multiple identical order items in input
+            # checking no multiple identical order items in input.
             if not OrderItem.objects.filter(order=order, pizza=oi['pizza'], size=oi['size']).exists():
                 items.append(OrderItem(order=order, **oi))
         OrderItem.objects.bulk_create(items)
