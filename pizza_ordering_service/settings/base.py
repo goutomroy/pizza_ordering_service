@@ -36,7 +36,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework.authtoken',
     'django_filters',
-    'swagger_render',
+    'apps.swagger_render',
     'apps.main'
 ]
 
