@@ -31,6 +31,8 @@ Imagine a pizza ordering services with the following functionality:
 *  Enter to admin site.  
 *  Check `http://127.0.0.1:8000/api_doc/`    
 
+![api doc](api_doc_template_sample.png)
+
 ####  TODO  
 * Need to write tests extensively.  
 		
