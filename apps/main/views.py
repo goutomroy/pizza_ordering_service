@@ -47,7 +47,8 @@ class OrderViewSet(viewsets.ModelViewSet):
     http_method_names = ('get', 'post', 'put')
 
     def get_queryset(self):
-        return Order.objects.prefetch_related('order_items').filter(user=self.request.user)
+        return Order.objects.prefetch_related('order_items').filter(user=self.request.user,
+                                                                    status__lt=StatusTypes.CANCELED)
 
 
 class OrderItemViewSet(viewsets.ModelViewSet):
@@ -56,7 +57,7 @@ class OrderItemViewSet(viewsets.ModelViewSet):
     pagination_class = StandardResultsSetPagination
 
     def get_queryset(self):
-        return OrderItem.objects.filter(order__user=self.request.user)
+        return OrderItem.objects.filter(order__user=self.request.user, order__status__lt=StatusTypes.CANCELED)
 
     def create(self, request, *args, **kwargs):
         many = True if isinstance(request.data, list) else False

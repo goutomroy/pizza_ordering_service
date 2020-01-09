@@ -36,7 +36,7 @@ class OrderItemSerializerNested(serializers.ModelSerializer):
 
     def validate(self, attrs):
         action = self.context['view'].action
-        if action in ['update', 'partial_update']:
+        if action in ['update']:
             if OrderItem.objects.filter(order=attrs['order'], pizza=attrs['pizza'], size=attrs['size']).exists():
                 raise serializers.ValidationError(f"The fields order, pizza, size must make a unique set.")
         return attrs
