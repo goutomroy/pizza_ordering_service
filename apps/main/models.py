@@ -8,7 +8,7 @@ from pizza_ordering_service.utils import populate_cache, StatusTypes, SizeTypes
 
 
 class UserProfile(models.Model):
-    user = models.OneToOneField(User, unique=True, on_delete=models.CASCADE)
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
     address = models.CharField(max_length=500, blank=True)
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
