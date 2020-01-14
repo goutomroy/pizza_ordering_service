@@ -57,7 +57,6 @@ class OrderItemSerializerNested(serializers.ModelSerializer):
 
 
 class OrderSerializer(serializers.ModelSerializer):
-
     order_items = OrderItemSerializerNested(many=True, required=False)
 
     class Meta:
