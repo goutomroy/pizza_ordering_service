@@ -13,7 +13,7 @@ class UserProfile(models.Model):
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
 
-    class Meta(object):
+    class Meta:
         default_related_name = 'user_profile'
         ordering = ('-created',)
 
@@ -22,10 +22,10 @@ class UserProfile(models.Model):
 
 
 @receiver(post_save, sender=User)
-def create_profile(sender, **kwargs):
-    if kwargs.get('created', False):
-        UserProfile.objects.get_or_create(user=kwargs.get('instance'))
-        Token.objects.get_or_create(user=kwargs.get('instance'))
+def create_profile(sender, instance=None, created=False, **kwargs):
+    if created:
+        UserProfile.objects.get_or_create(user=instance)
+        Token.objects.get_or_create(user=instance)
 
 
 class Pizza(models.Model):
