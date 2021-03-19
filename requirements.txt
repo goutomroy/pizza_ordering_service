@@ -7,7 +7,7 @@ coreschema==0.0.4
 Django==3.0.2
 django-filter==2.2.0
 django-redis==4.11.0
-djangorestframework==3.11.0
+djangorestframework==3.11.2
 gprof2dot==2019.11.30
 gunicorn==20.0.4
 idna==2.8
